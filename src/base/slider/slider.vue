@@ -30,7 +30,6 @@ export default {
             this._setSliderWidth();
             this._initScroll();
         }, 20)
-        console.log('mounted')
         // this._setSliderWidth();
         window.addEventListener('resize', () => {
             if(!this.bscroll){
@@ -46,10 +45,8 @@ export default {
             let childrens = sliderGroup.children;
             // slider初始宽度即为屏幕宽度
             let imgWidth = this.$refs.slider.clientWidth
-            console.log(this.$refs.slider,imgWidth)
             let allWidth = 0
-            console.log("setting width: ",childrens)
-            console.log(childrens.length)
+            // console.log("setting width: ",childrens)
             for(let i = 0; i< childrens.length; i++) {
                 let child = childrens[i];
                 addClass(child, 'slider-item')
@@ -69,7 +66,6 @@ export default {
         },
         _initScroll() {
             let slider = this.$refs.slider;
-            console.log("slider",slider)
             this.bscroll = new BScroll(slider, {
                 scrollX: true,
                 scrollY: false,
@@ -120,9 +116,13 @@ export default {
             .slider-item
                 float left
                 overflow hidden
+                // font-size 0
+                // line-height 0
                 a
-                    display block
-                    width 100%
+                    display inline-block
+                    // font-size 0 //或者Line-height 0 防止a标签高度大于img高度
+                    // width 100%
+                    // height 100%
                     text-decoration none 
                     img 
                         width 100%
@@ -134,6 +134,8 @@ export default {
             left 0
             right 0
             text-align center
+            // line-height 0
+            font-size 100%
             .dot
                 display inline-block
                 margin  0 4px
