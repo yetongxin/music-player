@@ -25,6 +25,17 @@ export default {
             currentPageIndex: 0
         }
     },
+    activated() {
+        if (this.autoplay) {
+            this._play()
+        }
+    },
+    deactivated() {
+        clearTimeout(this.timer)
+    },
+    beforeDestroy() {
+        clearTimeout(this.timer)
+    },
     mounted() {
         setTimeout(() => {
             this._setSliderWidth();
@@ -75,6 +86,7 @@ export default {
                     threshold: 0.1,
                     speed: 400
                 },
+                click: true,
             })
             this.bscroll.on('scrollEnd',(obj) => {
                 clearTimeout(this.sliderTimer)
@@ -92,9 +104,10 @@ export default {
             this._play();
         },
         _play() {
-            let pageIndex = this.currentIndex
+            let pageIndex = this.currentPageIndex
             if(this.autoplay) {
                 this.sliderTimer = setTimeout(() => {
+                    
                     this.bscroll.next();
                 }, 1000)
             }

@@ -4,8 +4,10 @@ import router from './router'
 import store from './store'
 
 import './common/stylus/index.styl'
+import VueLazyload from 'vue-lazyload'
 Vue.config.productionTip = false
 
+Vue.use(VueLazyload)
 new Vue({
   router,
   store,

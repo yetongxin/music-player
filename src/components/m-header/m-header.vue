@@ -2,7 +2,7 @@
 	<div class="m-header">
 		<div class="icon"></div>
 		<h1 class="text">QQ Music</h1>
-		<router-link>
+		<router-link to="/recommend">
 			<i class="icon-mine"></i>	
 		</router-link>    
 	</div>    
@@ -20,7 +20,7 @@ export default {
     
   .m-header
     position: relative
-    height 44px
+    height 0.44rem
     text-align: center
     color: $color-theme
     // margin-top 2px

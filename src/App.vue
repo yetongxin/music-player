@@ -3,8 +3,9 @@
     <m-header></m-header>
     <tab></tab>
     <!-- <h1>hello world</h1> -->
-    
-    <router-view></router-view>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 <script>

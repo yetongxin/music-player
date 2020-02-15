@@ -12,3 +12,11 @@ export function addClass(el, className) {
     classArr.push(className);
     el.className = classArr.join(' ')
 }
+export function getData(el, name) {
+    return el.getAttribute('data-'+name);
+}
+export function setData(el, name, val) {
+    if(val) {
+        return el.setAttribute('data-'+name, val);
+    }
+}

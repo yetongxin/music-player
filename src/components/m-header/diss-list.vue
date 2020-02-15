@@ -1,7 +1,7 @@
 <template>
   <section class="mui-list-gf">
-    <section class="title" v-show="disc.length">
-      <h2 class="text-clo-b title-text">{{name}}</h2>
+    <section class="title">
+      <h2 class="text-clo-b title-text" v-show="disc.length>0">官方歌单</h2>
       <a class="title-text-more l">更多</a>
     </section>
     <scroll v-bind:width="scrollWidth" class="scroll-wrapper">
@@ -28,14 +28,10 @@
 </template>
 
 <script>
-import Scroll from "@/base/scroll/scroll";
 export default {
-    components: {
-        Scroll
-    },
     props: {
-        disc: {type: Array, default: []},
-        name: {type: String, default:''}
+        disc: Array,
+        default: []
     }
 };
 </script>
@@ -48,7 +44,7 @@ export default {
 .mui-list-title
   display -webkit-box
   -webkit-box-orient vertical
-  -webkit-line-clamp 2
+  line-clamp 2
   white-space normal 
   word-wrap break-word
   word-break normal 
@@ -75,7 +71,7 @@ section.title
     // margin-top -.1rem
     display inline-block
     ul.mui-list-horizontal
-      display flex  //inline-block 设置这两个属性才能够自动撑开横向宽度
+      display inline-block //设置这两个属性才能够自动撑开横向宽度
       white-space nowrap
       margin 0 .12rem
       li
@@ -92,7 +88,6 @@ section.title
           img 
             display block
             width 100%
-            height 1.09rem
             object-fit cover
             z-index 1
             border-radius .08rem
