@@ -4,10 +4,10 @@
       <h2 class="text-clo-b title-text">{{name}}</h2>
       <a class="title-text-more l">更多</a>
     </section>
-    <scroll v-bind:width="scrollWidth" class="scroll-wrapper">
+    <scroll class="scroll-wrapper">
       <section class="mui-list-wrapper">
         <ul class="mui-list-horizontal">
-          <li v-for="item in disc" :key="item">
+          <li v-for="(item,index) in disc" :key="index">
             <div class="mui-list-box">
               <div class="mui-list-media">
                 <img class="mui-list-cover" :src="item.imgurl" />

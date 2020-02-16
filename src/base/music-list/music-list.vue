@@ -16,18 +16,17 @@
                 :probeType="3"
                 @scroll="onScroll"
         >
-            <div class="song-list-wrapper">
-                <song-list :songs="songs"></song-list>
+            <div class="song-list-wrapper" >
+                <song-list :songs="songs" @selectSong="selectSong"></song-list>
             </div>
         </scroll>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import Scroll from '@/base/scroll/scroll'
 import SongList from '@/base/song-list/song-list'
-
 export default {
     props: {
         songs: {type: Array, default: []},
@@ -46,7 +45,6 @@ export default {
     },
     computed: {
         bgStyle() {
-            console.log(this.bgImage, {backgroundImage: this.bgImage})
             return {backgroundImage: `url(${this.bgImage})`}
         },
         scrollHeight() {
@@ -59,14 +57,6 @@ export default {
                 
             }
         },
-        // bgLayerTop() {
-        //     let screenHeight = document.documentElement.clientHeight,
-        //         screenWidth = document.documentElement.clientWidth;
-        //     return {
-        //         // 背景图片的高度为屏幕宽度的70%
-        //         top: `${screenWidth*0.7}px`
-        //     }
-        // }
     },
     methods: {
         goBack() {
@@ -74,7 +64,12 @@ export default {
         },
         onScroll(pos) {
             this.scrollY = pos.y
-        }
+        },
+        selectSong({song, index}) {
+            let songs = this.songs
+            this.selectPlaySong({songs, index})
+        },
+        ...mapActions(['selectPlaySong'])
     },
     components: {
         Scroll,

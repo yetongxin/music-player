@@ -66,7 +66,9 @@ export default {
   data() {
     return {
       focus: [],
-      scrollWidth: '100%'
+      scrollWidth: '100%',
+      disc: [],
+      disc2: []
     };
   },
   created() {
@@ -89,7 +91,6 @@ export default {
             return;
             }
             this.disc = data.data.list.slice(0, 6);
-            console.log("disc data", data, this.disc)
         })
         getDiscList2().then(data => {
             data = data.response
@@ -97,7 +98,6 @@ export default {
             return;
             }
             this.disc2 = data.data.list.slice(0, 6);
-            console.log("disc data", data, this.disc2)
         })
 
       }

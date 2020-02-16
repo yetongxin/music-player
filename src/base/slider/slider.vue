@@ -109,7 +109,7 @@ export default {
                 this.sliderTimer = setTimeout(() => {
                     
                     this.bscroll.next();
-                }, 1000)
+                }, 2500)
             }
         }
     }

@@ -29,7 +29,6 @@ export default {
   },
   methods:{
     onSelect(singerBasicInfo){
-      console.log("onselect:",   singerBasicInfo)
       this.$router.push({
         path: `/singer/${singerBasicInfo.id}`
       })

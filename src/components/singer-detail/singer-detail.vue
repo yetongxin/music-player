@@ -13,7 +13,6 @@ import { ERR_OK } from '@/api/config'
 import { createSong } from '@/common/js/song'
 export default {
     created(){
-        console.log("created singer detail:", this.singer)
         this._getSingerDetailInfo();
     },
     data() {
@@ -35,14 +34,12 @@ export default {
     },
     methods: {
         _getSingerDetailInfo(){
-            console.log("_getSingerDetailInfo", this.singer)
             if(!this.singer || !this.singer.id) {
                 this.$router.push('/singer');
             }
             getSingerDetail(this.singer.id).then((res) => {
                 if(res.code === ERR_OK) {
                     this.songs = this._normalizeSongs(res.data.list)
-                    console.log(this.songs)              
                 }
 
             })

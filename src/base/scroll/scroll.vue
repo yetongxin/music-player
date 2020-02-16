@@ -33,7 +33,6 @@ export default {
             if(this.direction === 'y') {
                 scrollX = false; scrollY = true;
             }
-            console.log(this.probeType,"init scroll")
             this.scroll = new Bscroll(this.$refs.scrollwrapper, {
                 probeType: this.probeType,
                 scrollX,
@@ -41,7 +40,6 @@ export default {
                 click: this.click
             })
             if(this.listenScroll) {
-                console.log("listenScroll ===== true")
                 let _this = this;
                 this.scroll.on('scroll', (pos) => {
                     _this.$emit('scroll', pos)

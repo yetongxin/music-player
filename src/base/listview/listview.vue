@@ -64,7 +64,6 @@ export default {
         this.probeType = 3
         this.firstTouch = []
         this.listHeights = []
-        // console.log(this.$props)
     },
     methods:{
         onClickSinger(singerBasicInfo) {
@@ -79,35 +78,29 @@ export default {
             this.firstTouch = e.touches[0].pageY;
             this.firstTouchIndex = index;
             this._scrollTo(index);
-            // console.log(this.$refs.listGroup)
         },
         onTouchMove(e) {
             let nowTouch = e.touches[0].pageY
-            console.log(this.firstTouch, nowTouch)
+            // console.log(this.firstTouch, nowTouch)
 
             let nowTouchIndex = +this.firstTouchIndex + Math.floor((nowTouch - this.firstTouch)/SHORTCUR_LI_HEIGHT)
 
-            console.log("pre:", this.firstTouchIndex, "now:", nowTouchIndex)
+            // console.log("pre:", this.firstTouchIndex, "now:", nowTouchIndex)
             this._scrollTo(nowTouchIndex)
         },
         onScroll(pos){
-            // console.log("pos",pos)
             this.scrollY = pos.y
-            // console.log(this.scrollY)
         },
         _calculateHeights() {
-            console.log("calculateing")
             const group = this.$refs.listGroup;
             let arr = []
             let height = 0;
             arr.push(0)
-            console.log(group, group.length)
             for(let i=0;i<group.length;i++) {
                 height+=group[i].clientHeight;
                 arr.push(height)
             }
             this.listHeights = arr
-            console.log(arr)
         },
         _scrollTo(index) {
             let groups = this.$refs.listGroup;
@@ -119,7 +112,6 @@ export default {
     watch: {
         data() {
             setTimeout(() => {
-                console.log("start cal")
                 this._calculateHeights();
             },0)
         },

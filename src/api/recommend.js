@@ -13,7 +13,6 @@ export function getRecommend() {
 export function getDiscList() {
     const url =  host + '/getSongLists?categoryId=10000000'
     return axios.get(url).then(resp => {
-        console.log(resp)
         return new Promise((resolve, reject) => {
             return resolve(resp.data)
         })
@@ -23,7 +22,6 @@ export function getDiscList() {
 export function getDiscList2() {
     const url =  host + '/getSongLists?categoryId=165'
     return axios.get(url).then(resp => {
-        console.log(resp)
         return new Promise((resolve, reject) => {
             return resolve(resp.data)
         })
