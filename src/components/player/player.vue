@@ -1,61 +1,65 @@
 <template>
     <div class="player">
-        <div class="normal-player" v-show="fullPage">
-            <div class="background-filter">
-                <img :src="currentPlayingSong.image">
-            </div>
-            <header class="header">
-                <div class="icon" @click="closeFullPage">
-                    <i class="icon-back"></i>
+        <transition name="normal">
+            <div class="normal-player" v-show="fullPage">
+                <div class="background-filter">
+                    <img :src="currentPlayingSong.image">
                 </div>
-                <div class="title-wrapper">
-                    <h1 class="title">{{currentPlayingSong.name}}</h1>
-                    <h2 class="sub-title">{{currentPlayingSong.singer}}</h2>
-                </div>
-            </header>
-            <main class="main">
-                <div class="cd-wrapper">
-                    <div class="cd">
-                        <img class="cd-img" :src="currentPlayingSong.image"/>
+                <header class="header">
+                    <div class="icon" @click="closeFullPage">
+                        <i class="icon-back"></i>
                     </div>
-                </div>
-            </main>
+                    <div class="title-wrapper">
+                        <h1 class="title">{{currentPlayingSong.name}}</h1>
+                        <h2 class="sub-title">{{currentPlayingSong.singer}}</h2>
+                    </div>
+                </header>
+                <main class="main">
+                    <div class="cd-wrapper">
+                        <div class="cd">
+                            <img class="cd-img" :src="currentPlayingSong.image"/>
+                        </div>
+                    </div>
+                </main>
 
-            <div class="bottom">
-                <div class="opeerations-wrapper">
-                    <div class="icon-operation">
-                        <i class="icon-sequence"></i>
-                    </div>
-                    <div class="icon-operation">
-                        <i class="icon-prev"></i>
-                    </div>
-                    <div class="icon-operation icon-play-pause">
-                        <i class="icon-play"></i>
-                    </div>
-                    <div class="icon-operation ">
-                        <i class="icon-next"></i>
-                    </div>
-                    <div class="icon-operation">
-                        <i class="icon-playlist"></i>
+                <div class="bottom">
+                    <div class="opeerations-wrapper">
+                        <div class="icon-operation">
+                            <i class="icon-sequence"></i>
+                        </div>
+                        <div class="icon-operation">
+                            <i class="icon-prev"></i>
+                        </div>
+                        <div class="icon-operation icon-play-pause">
+                            <i class="icon-play"></i>
+                        </div>
+                        <div class="icon-operation ">
+                            <i class="icon-next"></i>
+                        </div>
+                        <div class="icon-operation">
+                            <i class="icon-playlist"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="mini-player" v-show="!fullPage && Object.keys(currentPlayingSong).length">
-            <div class="info-wrapper" @click="openFullPage">
-                <img :src="currentPlayingSong.image"/>
-                <span>{{currentPlayingSong.name}} - {{currentPlayingSong.singer}}</span>
-            </div>
-            <div class="icon-opeartion-wrapper">
-                <div class="icon-operation">
-                    <i class="icon icon-play"></i>
+        </transition>
+        <transition name="mini">
+            <div class="mini-player" v-show="!fullPage && Object.keys(currentPlayingSong).length">
+                <div class="info-wrapper" @click="openFullPage">
+                    <img :src="currentPlayingSong.image"/>
+                    <span>{{currentPlayingSong.name}} - {{currentPlayingSong.singer}}</span>
                 </div>
-                <div class="icon-operation">
-                    <i class="icon icon-playlist"></i>
+                <div class="icon-opeartion-wrapper">
+                    <div class="icon-operation">
+                        <i class="icon icon-play"></i>
+                    </div>
+                    <div class="icon-operation">
+                        <i class="icon icon-playlist"></i>
+                    </div>
+                    
                 </div>
-                
             </div>
-        </div>
+        </transition>
     </div>
 </template>
 
@@ -133,6 +137,7 @@ export default {
                     margin 0 auto
                     height 100%
                     text-align center
+                    animation rotate 24s infinite linear
                     img 
                         width 100%
                         border: 10px solid hsla(0,0%,100%,.1)
@@ -183,5 +188,30 @@ export default {
                 padding 5px
                 .icon
                     font-size $font-size-large-xx
-                    
+    .normal-enter-active, .normal-leave-active
+        // transition opacity 10s
+        transition all 0.5s
+        .header, .bottom, .cd-wrapper
+            transition all 0.5s
+    .normal-enter, .normal-leave-to
+        opacity 0
+        // transform translate3d(0, 100%, 0)
+        .header
+            transform translate3d(0,-100%,0)
+        .bottom
+            transform translate3d(0, 100%, 0)
+        .cd-wrapper
+            transform translate3d(-18%, 100%, 0)
+    .mini-enter-active, .mini-leave-active
+        transition all .5s
+    .mini-enter, .mini-leave-to
+        opacity 0
+    @keyframes rotate {
+        0% {
+            transform: rotate(0)
+        }
+        100% {
+            transform: rotate(360deg)
+        }
+    }
 </style>

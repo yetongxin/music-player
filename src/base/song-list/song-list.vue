@@ -58,5 +58,5 @@ export default {
             .desc
                 font-size $font-size-small
                 color rgba(26,26,26,0.8)
-                nowarp()
+                nowrap()
 </style>
