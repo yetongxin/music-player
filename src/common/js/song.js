@@ -10,27 +10,25 @@ export default class Song {
         this.url = url
     }   
 }
-export function createSong(musicData){
+export function createSong(song){
     return new Song({
-        id: musicData.songid,
-        mid: musicData.songmid,
-        singer: filterSinger(musicData.singer),
-        name: musicData.songname,
-        album: musicData.albumname,
-        duration: musicData.interval,
-        image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-        url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`
-        // url: `http://thirdparty.gtimg.com/C100${musicData.songmid}.m4a?fromtag=38`
-        // http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400001PLl3C4gPSCI.m4a?guid=5767607000&vkey=92D1BF4D3AA3AD21C167D692756D7677C17CA593234A68376A50C376FB87D8684223E8D8BFE7FAECEE9776F43F857A49FB5ED0B8DD9FB5FB&uin=0&fromtag=38
-      
+        id: song.id,
+        // mid: musicData.songmid,
+        singer: filterSinger(song.ar),
+        name: song.name,
+        album: song.al.name,
+        duration: 0,
+        image: song.al.picUrl+'?param=300y300',
+        // 播放链接需要请求获取
+        url: '' 
     })
 }
-function filterSinger(singer) {
+function filterSinger(artists) {
     let ret = []
-    if (!singer) {
+    if (!artists) {
       return ''
     }
-    singer.forEach((s) => {
+    artists.forEach((s) => {
       ret.push(s.name)
     })
     return ret.join('/')

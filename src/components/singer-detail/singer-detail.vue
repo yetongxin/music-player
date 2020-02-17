@@ -25,7 +25,7 @@ export default {
             return this.singer.name
         },
         bgImage() {
-            return this.singer.avatar
+            return this.singer.picBig
         },
         ...mapGetters(['singer'])
     },
@@ -38,8 +38,9 @@ export default {
                 this.$router.push('/singer');
             }
             getSingerDetail(this.singer.id).then((res) => {
-                if(res.code === ERR_OK) {
-                    this.songs = this._normalizeSongs(res.data.list)
+                if(res.data.code === 200) {
+                    console.log(res.data)
+                    this.songs = this._normalizeSongs(res.data.songs)
                 }
 
             })
@@ -47,10 +48,11 @@ export default {
         _normalizeSongs(list) {
             let ret = []
             list.forEach((item) => {
-                let {musicData} = item
-                if (musicData.songid && musicData.albummid) {
-                    ret.push(createSong(musicData))
-                }
+                ret.push(createSong(item))
+                // let { musicData } = item
+                // if (musicData.songid && musicData.albummid) {
+                //     ret.push(createSong(musicData))
+                // }
             })
             return ret
         }

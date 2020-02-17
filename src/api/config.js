@@ -11,3 +11,5 @@ export const commonParams = {
   }
   
   export const ERR_OK = 0
+
+  export const HOST = 'http://39.105.168.245:3000'

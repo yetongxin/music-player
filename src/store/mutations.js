@@ -29,5 +29,9 @@ const mutations = {
     [types.SET_MODE](state, mode) {
         state.mode = mode;
     },
+
+    [types.SET_PLAY_SONG_URL](state, url) {
+        state.playSongUrl = url;
+    }
 }
 export default mutations

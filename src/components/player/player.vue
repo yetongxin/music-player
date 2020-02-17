@@ -16,7 +16,7 @@
                 </header>
                 <main class="main">
                     <div class="cd-wrapper">
-                        <div class="cd">
+                        <div class="cd playing" :class="playing?'':'pause'">
                             <img class="cd-img" :src="currentPlayingSong.image"/>
                         </div>
                     </div>
@@ -27,13 +27,13 @@
                         <div class="icon-operation">
                             <i class="icon-sequence"></i>
                         </div>
-                        <div class="icon-operation">
+                        <div class="icon-operation" @click.stop="playPre">
                             <i class="icon-prev"></i>
                         </div>
-                        <div class="icon-operation icon-play-pause">
-                            <i class="icon-play"></i>
+                        <div class="icon-operation icon-play-pause" @click.stop="toggolePlayingState">
+                            <i :class="playing ? 'icon-pause':'icon-play'"></i>
                         </div>
-                        <div class="icon-operation ">
+                        <div class="icon-operation " @click.stop="playNext">
                             <i class="icon-next"></i>
                         </div>
                         <div class="icon-operation">
@@ -50,8 +50,8 @@
                     <span>{{currentPlayingSong.name}} - {{currentPlayingSong.singer}}</span>
                 </div>
                 <div class="icon-opeartion-wrapper">
-                    <div class="icon-operation">
-                        <i class="icon icon-play"></i>
+                    <div class="icon-operation" @click="toggolePlayingState">
+                        <i class="icon" :class="playing ? 'icon-pause':'icon-play'"></i>
                     </div>
                     <div class="icon-operation">
                         <i class="icon icon-playlist"></i>
@@ -60,14 +60,46 @@
                 </div>
             </div>
         </transition>
+        <audio :src="playSongUrl" 
+                @canplay="canplay"
+                @error="onAudioError"
+                @timeupdate="onTimeUpdate" 
+                ref="audio"
+        >
+        </audio>
     </div>
 </template>
 
 <script>
 import { mapMutations, mapGetters } from 'vuex'
+import * as MUTATION_TYPES from '@/store/mutation-types'
 export default {
+    data() {
+        return {
+            readyToPlay: false
+        }
+    },
     computed: {
-        ...mapGetters(['fullPage','currentPlayingSong'])
+        ...mapGetters([
+            'fullPage',
+            'currentPlayingSong',
+            'playing',
+            'playSongUrl',
+            'currentPlayIndex',
+            'sequenceList'
+        ])
+    },
+    watch: {
+        playing(newPlaying) {
+            if(!this.readyToPlay) {
+                return;
+            }
+            if(newPlaying) {
+                this.$refs.audio.play()
+            } else {
+                this.$refs.audio.pause()
+            }
+        }
     },
     methods: {
         closeFullPage() {
@@ -76,8 +108,40 @@ export default {
         openFullPage() {
             this.setFullpage(true)
         },
+        toggolePlayingState() {
+            let cur = this.playing
+            this.setPlayingState(!this.playing)
+        },
+        playNext() {
+            let newIndex = this.currentPlayIndex + 1;
+            if(newIndex >= this.sequenceList.length) {
+                newIndex = 0;
+            }
+            this.setCurrengPlayIndex(newIndex);
+        },
+        playPre() {
+            let newIndex = this.currentPlayIndex - 1;
+            if(newIndex < 0) {
+                newIndex = this.sequenceList.length - 1;
+            }
+            this.setCurrengPlayIndex(newIndex);
+        },
+        canplay() {
+            console.log("can play")
+            this.readyToPlay = true
+            this.$refs.audio.play()
+        },
+        onAudioError() {
+            this.readyToPlay = true
+            console.log("load music error")
+        },
+        onTimeUpdate(){
+
+        },
         ...mapMutations({
-            setFullpage: 'SET_FULLPAGE_STATE'
+            setFullpage: MUTATION_TYPES.SET_FULLPAGE_STATE,
+            setPlayingState: MUTATION_TYPES.SET_PLAYING_STATE,
+            setCurrengPlayIndex: MUTATION_TYPES.SET_CURRENT_PLAY_INDEX
         })
     }
 }
@@ -137,7 +201,10 @@ export default {
                     margin 0 auto
                     height 100%
                     text-align center
-                    animation rotate 24s infinite linear
+                    &.playing
+                        animation rotate 24s infinite linear
+                    &.pause
+                        animation-play-state paused
                     img 
                         width 100%
                         border: 10px solid hsla(0,0%,100%,.1)

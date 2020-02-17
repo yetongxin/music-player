@@ -2084,6 +2084,11 @@ clone@^1.0.2:
   resolved "https://registry.npm.taobao.org/clone/download/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
   integrity sha1-2jCcwmPfFZlMaIypAheco8fNfH4=
 
+cnchar@^2.0.9:
+  version "2.0.9"
+  resolved "https://registry.npm.taobao.org/cnchar/download/cnchar-2.0.9.tgz#b2c700792d7fb993c5b52d2c9ca949407ecf8bd2"
+  integrity sha1-sscAeS1/uZPFtS0snKlJQH7Pi9I=
+
 coa@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npm.taobao.org/coa/download/coa-2.0.2.tgz#43f6c21151b4ef2bf57187db0d73de229e3e7ec3"

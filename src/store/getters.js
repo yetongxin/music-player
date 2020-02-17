@@ -23,3 +23,4 @@ export const currentPlayingSong = state => {
         return {};
     }
 }
+export const playSongUrl = state => state.playSongUrl;

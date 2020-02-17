@@ -11,6 +11,6 @@ const state = {
     sequenceList: [],     // 播放顺序列表
     currentPlayIndex: -1, // 当前播放
     mode: PLAY_MODE.SEQUENCE,  //播放模式，顺序播放
-
+    playSongUrl: ''       // 音乐播放地址
 }
 export default state;

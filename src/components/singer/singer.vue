@@ -9,12 +9,14 @@
 import { getSingerList } from '@/api/singer'
 import ListView from '@/base/listview/listview'
 import { mapMutations } from 'vuex'
-function Singer({id, name}){
+import cnchar from 'cnchar'
+function Singer({id, name, avatar}){
   this.id = id
   this.name = name
-  this.avatar = `https://y.gtimg.cn/music/photo_new/T001R300x300M000${id}.jpg?max_age=2592000`
+  this.avatar = avatar + '?param=50y50';
+  this.picBig = avatar ;
 }
-const HOT_SINGER_LEN = 16
+const HOT_SINGER_LEN = 20
 export default {
   created() {
     this._getSingerList();
@@ -37,8 +39,10 @@ export default {
     },
     _getSingerList() {
       getSingerList().then((res=> {
-        if(res.code == 0) {
-          this.singers = this._normalizeSinger(res.data.list)
+        console.log(res)
+        let data = res.data
+        if(data.code == 200) {
+          this.singers = this._normalizeSinger(res.data.artists)
         }
       }))
     },
@@ -51,9 +55,9 @@ export default {
       }
       list.forEach((item, index) => {
         if(index<HOT_SINGER_LEN) {
-          map.hot.items.push(new Singer({name: item.Fsinger_name, id: item.Fsinger_mid}));
+          map.hot.items.push(new Singer({name: item.name, id: item.id, avatar: item.picUrl}));
         }
-        const key = item.Findex
+        const key = item.name.spell()[0].toUpperCase();
         if (!map[key]) {
             map[key] = {
               title: key,
@@ -61,8 +65,9 @@ export default {
             }
           }
         map[key].items.push(new Singer({
-          name: item.Fsinger_name,
-          id: item.Fsinger_mid
+          name: item.name,
+          id: item.id,
+          avatar: item.picUrl
         }))
       })
       let ret = [], hot = []
