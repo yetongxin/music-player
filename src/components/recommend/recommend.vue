@@ -1,6 +1,6 @@
 <template>
   <div  class="recommend-wrapper">
-    <div class="slider-wrapper">
+    <div class="slider-wrapper" v-show="focus.length" :style="{minHeight: minHeight2}">
       <slider v-if="focus.length">
         <!--防止出现未有数据时候无法正确获取slider的宽度-->
         <div v-for="pic in focus">
@@ -10,7 +10,7 @@
         </div>
       </slider>
     </div>
-    <main>
+    <main v-show="focus.length&& disc.length&&disc2.length">
       <!-- <section class="mui-list-gf">
         <section class="title">
           <h2 class="text-clo-b title-text">官方歌单</h2>
@@ -68,10 +68,13 @@ export default {
       focus: [],
       scrollWidth: '100%',
       disc: [],
-      disc2: []
+      disc2: [],
+      minHeight2: 0
     };
   },
   created() {
+    this.minHeight2 = document.documentElement.clientWidth/2.5 + 'PX';
+    console.log(this.minHeight2)
     this._getRecommend();
     this._getDiscList();
   },

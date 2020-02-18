@@ -21,7 +21,15 @@
                         </div>
                     </div>
                 </main>
-
+                <div class="progress-bar-wrapper">
+                    <!-- 这里的percent为百分比 -->
+                    <progress-bar :percent="percent" @percentChange="onPercentChange"></progress-bar>
+                    <div class="time">
+                        <div class="time-now">{{currentTimeFormat}}</div>
+                        <div class="time-all">{{durationFormat}}</div>
+                    </div>
+                    
+                </div>
                 <div class="bottom">
                     <div class="opeerations-wrapper">
                         <div class="icon-operation">
@@ -60,7 +68,9 @@
                 </div>
             </div>
         </transition>
-        <audio :src="playSongUrl" 
+        
+        <audio :src="playSongUrl?playSongUrl:''" 
+                @durationchange="onDurationChange"
                 @canplay="canplay"
                 @error="onAudioError"
                 @timeupdate="onTimeUpdate" 
@@ -71,12 +81,21 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 import * as MUTATION_TYPES from '@/store/mutation-types'
+import ProgressBar from '@/base/progress-bar/progress-bar'
 export default {
+    components:{
+        ProgressBar
+    },
     data() {
         return {
-            readyToPlay: false
+            readyToPlay: false,
+            duration: 0,
+            current: 0,
+            currentTimeFormat: '0:00',
+            durationFormat: '0:00',
+            percent: 0
         }
     },
     computed: {
@@ -99,6 +118,11 @@ export default {
             } else {
                 this.$refs.audio.pause()
             }
+        },
+
+        current(newVal) {
+            this.currentTimeFormat = this._formatTime(newVal);
+            this.percent = 100 * newVal / this.duration;
         }
     },
     methods: {
@@ -117,32 +141,56 @@ export default {
             if(newIndex >= this.sequenceList.length) {
                 newIndex = 0;
             }
-            this.setCurrengPlayIndex(newIndex);
+            this.setCurrentPlayIndex(newIndex);
+            this.getSongUrl(newIndex);
+
         },
         playPre() {
             let newIndex = this.currentPlayIndex - 1;
             if(newIndex < 0) {
                 newIndex = this.sequenceList.length - 1;
             }
-            this.setCurrengPlayIndex(newIndex);
+            this.setCurrentPlayIndex(newIndex);
+            this.getSongUrl(newIndex);
         },
-        canplay() {
-            console.log("can play")
+        onDurationChange(e) {
+            this.duration = this.$refs.audio.duration
+            this.durationFormat = this._formatTime(this.$refs.audio.duration)
+        },
+        canplay(e) {
             this.readyToPlay = true
             this.$refs.audio.play()
+            // this.duration = this.$refs.audio.duration;
         },
         onAudioError() {
             this.readyToPlay = true
-            console.log("load music error")
+            console.error("load music error")
         },
-        onTimeUpdate(){
-
+        onTimeUpdate(e){
+            this.current = e.target.currentTime
+            if(e.target.currentTime>=e.target.duration) {
+                this.playNext();
+            }
+        },
+        onPercentChange(percent) {
+            console.log("监听到change percent",percent)
+            this.percent = percent*100
+            this.$refs.audio.currentTime = this.$refs.audio.duration*percent;
+        },
+        _formatTime(seconds){
+            let min = parseInt(seconds/60);
+            let sec = (seconds%60).toFixed(0);
+            if(sec.length < 2) {
+                sec = '0' + sec
+            } 
+            return min + ":" + sec
         },
         ...mapMutations({
             setFullpage: MUTATION_TYPES.SET_FULLPAGE_STATE,
             setPlayingState: MUTATION_TYPES.SET_PLAYING_STATE,
-            setCurrengPlayIndex: MUTATION_TYPES.SET_CURRENT_PLAY_INDEX
-        })
+            setCurrentPlayIndex: MUTATION_TYPES.SET_CURRENT_PLAY_INDEX
+        }),
+        ...mapActions(['getSongUrl'])
     }
 }
 </script>
@@ -156,7 +204,7 @@ export default {
         bottom 0
         left 0
         right 0
-        background $color-background
+        background $color-filter-grey
         z-index 1000
         .background-filter
             width 100%
@@ -172,6 +220,7 @@ export default {
                 filter blur(20px)
         .header
             display flex
+            color white
             .icon
                 width 0.4rem
                 height 0.4rem
@@ -225,8 +274,20 @@ export default {
                 justify-content space-between
                 align-items center
                 font-size 28px
+                color white
                 .icon-play-pause
                     font-size 50px
+        .progress-bar-wrapper
+            position fixed
+            bottom 0.8rem
+            width 100%
+            .time 
+                width 80%
+                margin 8px auto
+                display flex
+                justify-content space-between
+                font-size 14px
+                color $color-text-ll
     .mini-player
         position fixed
         bottom 0
