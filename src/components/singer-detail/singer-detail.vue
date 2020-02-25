@@ -39,7 +39,6 @@ export default {
             }
             getSingerDetail(this.singer.id).then((res) => {
                 if(res.data.code === 200) {
-                    console.log(res.data)
                     this.songs = this._normalizeSongs(res.data.songs)
                 }
 

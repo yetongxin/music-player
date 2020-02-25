@@ -14,12 +14,27 @@
                         <h2 class="sub-title">{{currentPlayingSong.singer}}</h2>
                     </div>
                 </header>
-                <main class="main">
-                    <div class="cd-wrapper">
+                <main class="main"
+                    @touchstart.prevent="onMainTouchStart"
+                    @touchmove.prevent="onMainTouchMove"
+                    @touchend="onMainTouchEnd"       
+                >
+                    <div class="cd-wrapper main-left" ref="mainLeft">
                         <div class="cd playing" :class="playing?'':'pause'">
                             <img class="cd-img" :src="currentPlayingSong.image"/>
                         </div>
                     </div>
+                    <scroll direction="y" class="lyrics-wrapper main-right" v-if="lyric" ref="lyricScroll">
+                        <div>
+                            <p v-for="(line,index) in lyric.lines" :key="index" 
+                            class="text" 
+                            :class="{'current': currentLineNum===index}"
+                            ref="lyricLine"
+                            >
+                            {{line.txt}}
+                            </p>
+                        </div>
+                    </scroll>
                 </main>
                 <div class="progress-bar-wrapper">
                     <!-- 这里的percent为百分比 -->
@@ -82,11 +97,18 @@
 
 <script>
 import { mapMutations, mapGetters, mapActions } from 'vuex'
+import { getLyrics } from '@/api/song'
+import LyricParser from '@/common/js/LyricParser'
 import * as MUTATION_TYPES from '@/store/mutation-types'
 import ProgressBar from '@/base/progress-bar/progress-bar'
+import Scroll from '@/base/scroll/scroll'
 export default {
     components:{
-        ProgressBar
+        ProgressBar,
+        Scroll
+    },
+    created(){
+        this.touch = {}
     },
     data() {
         return {
@@ -95,7 +117,10 @@ export default {
             current: 0,
             currentTimeFormat: '0:00',
             durationFormat: '0:00',
-            percent: 0
+            percent: 0,
+            lyric: null,
+            currentLineNum: -1,
+            currentShow: 'cd'
         }
     },
     computed: {
@@ -123,18 +148,60 @@ export default {
         current(newVal) {
             this.currentTimeFormat = this._formatTime(newVal);
             this.percent = 100 * newVal / this.duration;
+        },
+        currentPlayingSong(newSong, oldSong) {
+            if(!newSong.id) {
+                return;
+            }
+            if(newSong.id === oldSong.id) {
+                return;
+            }
+            if(this.lyric) {
+                this.lyric.stop();
+                this.currentLineNum = 0; 
+                this.$refs.lyricScroll.$el.style['transform'] = `translate3d(0, 0, 0)`;
+
+                this.$refs.lyricScroll.$el.style['transition'] = `0s`;
+                this.$refs.mainLeft.style['opacity'] = 1;
+                this.currentShow = 'cd'
+                this.$refs.mainLeft.style['transition'] = `0s`;
+            }
+            getLyrics(newSong.id).then(res => {
+                if(res.data.code === '200') {
+                    return;
+                }
+                this.lyric = new LyricParser(res.data.lrc.lyric, this.handleLyric)
+
+                if(this.playing) {
+                    this.lyric.play();
+                }
+            })
         }
     },
     methods: {
         closeFullPage() {
+            // this.$refs.lyricScroll.$el.style['transform'] = `translate3d(0, 0, 0)`;
+            // this.$refs.lyricScroll.$el.style['transition'] = `0s`;
+            // this.$refs.mainLeft.style['opacity'] = 1;
+            // this.currentShow = 'cd'
+            // this.$refs.mainLeft.style['transition'] = `0s`;
+            
             this.setFullpage(false)
         },
         openFullPage() {
+            this.$refs.lyricScroll.$el.style['transform'] = `translate3d(0, 0, 0)`;
+            this.$refs.lyricScroll.$el.style['transition'] = `0s`;
+            this.$refs.mainLeft.style['opacity'] = 1;
+            this.currentShow = 'cd'
+            this.$refs.mainLeft.style['transition'] = `0s`;
             this.setFullpage(true)
         },
         toggolePlayingState() {
             let cur = this.playing
             this.setPlayingState(!this.playing)
+            if(this.lyric) {
+                this.lyric.togglePlay();
+            }
         },
         playNext() {
             let newIndex = this.currentPlayIndex + 1;
@@ -173,9 +240,85 @@ export default {
             }
         },
         onPercentChange(percent) {
-            console.log("监听到change percent",percent)
+            const newTime = this.$refs.audio.duration*percent
             this.percent = percent*100
             this.$refs.audio.currentTime = this.$refs.audio.duration*percent;
+            if(this.lyric) {
+                this.lyric.seek(newTime*1000)
+            }
+        },
+        handleLyric({txt, lineNum}) {
+            let lines = this.$refs.lyricLine
+            if(lineNum >= 6) {
+                this.$refs.lyricScroll.scrollToElement(lines[lineNum-5], 1000)
+            } else {
+                this.$refs.lyricScroll.scrollTo(0, 0, 1000)
+            }
+            this.currentLineNum= lineNum;
+        },
+        onMainTouchStart(e){
+            this.touchStart = true;
+            const touch = e.touches[0]
+            this.touch.startX = touch.pageX;
+            this.touch.startY = touch.pageY;
+        },
+        onMainTouchMove(e){
+            if(!this.touchStart) {
+                return;
+            }
+            const touch = e.touches[0];
+            const deltaX = touch.pageX - this.touch.startX;
+            const deltaY = touch.pageY - this.touch.startY;
+            if(Math.abs(deltaY) > Math.abs(deltaX)) {
+                return;
+            }
+            const left = this.currentShow === 'cd' ? 0 : -window.innerWidth;
+            const offsetLeft = Math.min(0,Math.max(-window.innerWidth, left+deltaX)); //最左移动到-window.innerWidth, 最右移动到0
+            // this.touch.percent = offsetLeft / window.innerWidth
+            this.touch.percent = deltaX / window.innerWidth
+
+            this.$refs.lyricScroll.$el.style['transform'] = `translate3d(${offsetLeft}px, 0, 0)`;
+            this.$refs.lyricScroll.$el.style['transition'] = `0s`;
+            
+            let opacityBase;
+            if(this.touch.percent<0) { //左滑初始为1
+                if(this.currentShow === 'lyric') {
+                    return;
+                }
+                opacityBase = 1;
+            } else {
+                if(this.currentShow === 'cd') {
+                    return;
+                }
+                opacityBase = 0;
+            }
+            this.$refs.mainLeft.style['opacity'] = opacityBase + this.touch.percent
+            this.$refs.mainLeft.style['transition'] = `0s`;
+        },
+        onMainTouchEnd(e){
+            let offset
+            if(this.currentShow === 'cd') { //向左拉
+                if(this.touch.percent < -0.1) {
+                    offset = -window.innerWidth
+                    this.currentShow = 'lyric'
+                } else { // 拉得不够远，返回去
+                    offset = 0
+                }
+            } else { //  向右拉
+                if(this.touch.percent > 0.1) {
+                    offset = 0;
+                    this.currentShow = 'cd'
+                } else {
+                    offset = -window.innerWidth
+                }
+            }
+            this.touch.percent = 0;
+            this.$refs.lyricScroll.$el.style['transform'] = `translate3d(${offset}px, 0, 0)`
+            this.$refs.lyricScroll.$el.style['transition'] = `0.5s`
+
+            this.$refs.mainLeft.style['opacity'] = this.currentShow === 'cd' ? 1 : 0
+            this.$refs.mainLeft.style['transition'] = `opacity 0.5s`
+
         },
         _formatTime(seconds){
             let min = parseInt(seconds/60);
@@ -241,10 +384,16 @@ export default {
         .main
             position fixed
             width 100%
-            top 1rem
-            // bottom 0.6rem
+            top 0.8rem
+            bottom 1.5rem
+            box-sizing border-box
+            padding-top 0.3rem
+            white-space nowrap
             .cd-wrapper
                 width 100%
+                // opacity  0 //TODO
+                display inline-block
+                vertical-align top
                 .cd
                     width 76%
                     margin 0 auto
@@ -259,7 +408,25 @@ export default {
                         border: 10px solid hsla(0,0%,100%,.1)
                         border-radius 50%
                         box-sizing border-box
-                        
+            .lyrics-wrapper
+                position absolute
+                display inline-block
+                width 100%
+                top 0
+                bottom 0
+                text-align center
+                padding-left 30px
+                padding-right 30px
+                box-sizing border-box
+                overflow hidden
+
+                p.text
+                    color $color-text-dg
+                    font-size  16px
+                    line-height 36px
+                    nowrap()
+                    &.current
+                        color white
         .bottom
             position fixed
             bottom 0
@@ -322,8 +489,8 @@ export default {
         .header, .bottom, .cd-wrapper
             transition all 0.5s
     .normal-enter, .normal-leave-to
-        opacity 0
-        // transform translate3d(0, 100%, 0)
+        // opacity 0
+        transform translate3d(0, 100%, 0)
         .header
             transform translate3d(0,-100%,0)
         .bottom

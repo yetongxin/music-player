@@ -74,7 +74,6 @@ export default {
   },
   created() {
     this.minHeight2 = document.documentElement.clientWidth/2.5 + 'PX';
-    console.log(this.minHeight2)
     this._getRecommend();
     this._getDiscList();
   },

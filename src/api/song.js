@@ -9,3 +9,12 @@ export function getPlayUrl(id) {
         withCredentials: true
     })
 }
+export function getLyrics(id) {
+    if(!id) {
+        return;
+    }
+    return axios({
+        url: HOST + `/lyric?id=${id}`,
+        withCredentials: true
+    })
+}

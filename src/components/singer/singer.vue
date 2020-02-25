@@ -39,7 +39,6 @@ export default {
     },
     _getSingerList() {
       getSingerList().then((res=> {
-        console.log(res)
         let data = res.data
         if(data.code == 200) {
           this.singers = this._normalizeSinger(res.data.artists)

@@ -2,7 +2,7 @@
     <div class="music-list">
         <div class="header">
             <div class="back" @click="goBack">
-                <i class="icon-back"></i>
+                <i class="icon-back" ref="iconBack"></i>
             </div>
             <h1 class="title">{{title}}</h1>
             <div class="bg-image" :style="bgStyle" ref="bgImage"></div>
@@ -115,12 +115,14 @@ export default {
 
                     // this.$refs.bgLayer.style.top = '0px'
                     this.$refs.bgLayer.style.zIndex = 201
+                    this.$refs.iconBack.style.color = 'black'
                 } else {
                     this.$refs.bgImage.style.paddingTop = '70%'
                     this.$refs.bgImage.style.zIndex = 10
 
                     // this.$refs.bgLayer.style.top = '0px'
                     this.$refs.bgLayer.style.zIndex = 0
+                    this.$refs.iconBack.style.color = 'white'
                 }
             }
         }
@@ -150,7 +152,7 @@ export default {
                 .icon-back
                     display block
                     padding 10px
-                    color  black 
+                    color  white
                     font-size $font-size-large + 2px
             .title
                 position absolute 

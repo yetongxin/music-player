@@ -32,7 +32,6 @@ export default {
   },
   mounted() {
     this.progressAllWidth = this.$refs.progressBarInner.clientWidth;
-    console.log("mounted", this.progressAllWidth);
   },
   watch: {
     percent(newVal) {
@@ -51,11 +50,9 @@ export default {
   methods: {
     onTouchStart(e) {
       this.ismoving = true;
-      console.log("touchstart", e);
       this.touch = e.touches[0].pageX;
     },
     onTouchMove(e) {
-      console.log("touchmove", e);
       this.touch = e.touches[0].pageX;
     },
     onTouchEnd(e) {
@@ -66,7 +63,7 @@ export default {
       let progressPlayWidth = this.$refs.progressPlay.clientWidth;
       let progressAllWidth = this.$refs.progressBarInner.clientWidth;
       let percent = progressPlayWidth / progressAllWidth;
-      this.$emit("percentChange", percent);
+      this.$emit("percentChange", percent);//此事件只会在手动拉动进度条时触发
     },
     _moveProgressAndDot(x) {
       let left = this.$refs.progressBarInner.offsetLeft;
